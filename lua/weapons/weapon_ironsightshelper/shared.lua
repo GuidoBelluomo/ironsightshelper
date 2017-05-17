@@ -1,3 +1,7 @@
+if (CLIENT) then
+	SWEP.WepSelectIcon = surface.GetTextureID("vgui/entities/weapon_ironsightshelper")
+end
+
 SWEP.Author = "Kurochi"
 SWEP.Category = "Kurochi's Ironsights Helper"
 SWEP.PrintName = "Kurochi's Ironsights Helper"
@@ -5,6 +9,7 @@ SWEP.Instructions = "Read the on-screen instructions, or check workshop page."
 SWEP.DrawCrosshair = true
 SWEP.ViewModelFOV = 65
 SWEP.ViewModelFlip = false
+
 SWEP.Primary.Automatic = true;
 
 SWEP.Spawnable = true
