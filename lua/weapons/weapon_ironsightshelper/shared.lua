@@ -108,7 +108,7 @@ if (CLIENT) then
 		if (!self.EditMode) then
 			hudText = hudText .. "Primary Fire: Shoot\nSecondary Fire: Aim (" .. (self.Aiming and "ON" or "OFF") .. ")"
 		else
-			hudText = hudText .. "[Toggle with Flashlight] Flip Model " .. (self.ViewModelFlip and "ON" or "OFF") .. "\n\nCurrent Step: " .. self.Steps[self.StepIndex] .. "\n[Up] Increment Value\n[Down] Decrement Value\n\n[Left] Previous value\n[Right] Next Value\n[Page Up] Top Value\n[Page Down] Bottom Value\n\n[Numpad -] Decrease Step\n[Numpad +] Increase Step\n\n[Delete] Reset"
+			hudText = hudText .. "[Toggle with Flashlight] Flip Model " .. (self.ViewModelFlip and "ON" or "OFF") .. "\n\n[Lect Ctrl] Decrease Step\n[Left Shift] Increase Step\n\n[Up] Increment Value\n[Down] Decrement Value\n\n[Left] Previous value\n[Right] Next Value\n[Page Up] Top Value\n[Page Down] Bottom Value\n\n[Delete] Reset"
 		end
 		surface.SetFont("CloseCaption_Normal")
 		local w, h = surface.GetTextSize(hudText)
@@ -127,7 +127,7 @@ if (CLIENT) then
 			local angleR = (self.SelectedPos == 5 and "<colour=green>" or "") .. math.Round(self.OffsetAngle.r, 3) .. (self.SelectedPos == 5 and "</colour>" or "");
 			local fov = (self.SelectedPos == 6 and "<colour=green>" or "") .. math.Round(self.IronsightsFOV) .. (self.SelectedPos == 6 and "</colour>" or "");
 
-			hudText = "<font=CloseCaption_Normal>Offset Vector:\t(" .. offsetX .. ",\t" .. offsetY .. ",\t" .. offsetZ .. ")" .. "\n"
+			hudText = "<font=CloseCaption_Normal>Current Step: " .. self.Steps[self.StepIndex] .. "\n\nOffset Vector:\t(" .. offsetX .. ",\t" .. offsetY .. ",\t" .. offsetZ .. ")" .. "\n"
 			hudText = hudText .. "Offset Angle:\t(" .. angleP .. ",\t" .. angleY .. ",\t" .. angleR .. ")\n"
 			hudText = hudText .. "Ironsights FOV:\t" .. fov .. "</font>"
 			hudText = markup.Parse(hudText)
@@ -148,14 +148,14 @@ if (CLIENT) then
 		end
 
 		if (KeyDown(KEY_SPACE, 0.2)) then
-			SetClipboardText("Vector(" .. self.OffsetVector.x .. ", " .. self.OffsetVector.y .. ", " .. self.OffsetVector.z .. ") Angle(" .. self.OffsetAngle.p .. ", " .. self.OffsetAngle.y .. ", " .. self.OffsetAngle.r .. ")")
-			LocalPlayer():ChatPrint("Copied values to clipboard! You can now paste it anywhere you want. Value may look weird, don't worry about it, it works.")
+			SetClipboardText("Vector Offset: Vector(" .. self.OffsetVector.x .. ", " .. self.OffsetVector.y .. ", " .. self.OffsetVector.z .. "); Angle Offset: Angle(" .. self.OffsetAngle.p .. ", " .. self.OffsetAngle.y .. ", " .. self.OffsetAngle.r .. "); FOV: " .. self.IronsightsFOV)
+			LocalPlayer():ChatPrint("Copied the values to the clipboard!\nYou can now paste it anywhere you want.\nValue may look weird, don't worry about it, it works.")
 			return;
 		elseif (KeyDown(KEY_INSERT, 0.2)) then
 			local ent = ents.GetAll()[#ents.GetAll()];
 			if (IsValid(ent)) then
 				local model = ent:GetModel()
-				if (util.IsValidModel(model)) then
+				if (file.Exists(model, "GAME")) then
 					self.ViewModel = model
 				else
 					LocalPlayer():ChatPrint("Invalid model!");
@@ -196,10 +196,10 @@ if (CLIENT) then
 				modifier = 0;
 			end
 
-			if (KeyDown(KEY_PAD_MINUS, 0.2)) then
+			if (KeyDown(KEY_LCONTROL, 0.2)) then
 				self.StepIndex = math.Clamp(self.StepIndex - 1, 1, #self.Steps)
 				modifier = 0;
-			elseif (KeyDown(KEY_PAD_PLUS, 0.2)) then
+			elseif (KeyDown(KEY_LSHIFT, 0.2)) then
 				self.StepIndex = math.Clamp(self.StepIndex + 1, 1, #self.Steps)
 				modifier = 0;
 			end
@@ -276,8 +276,10 @@ if (CLIENT) then
 	end
 else
 	function GM:PlayerPostThink(player)
+		if (!IsValid(player) or !player:Alive()) then return end;
+
 		local SWEP = player:GetActiveWeapon();
-		if (SWEP:GetClass() == "ironsights_helper" and player:GetMoveType() != MOVETYPE_NOCLIP) then
+		if (SWEP:GetClass() == "weapon_ironsightshelper" and player:GetMoveType() != MOVETYPE_NOCLIP) then
 			if (SWEP.EditMode) then
 				if (player:GetMoveType() != MOVETYPE_NONE) then
 					player:SetMoveType(MOVETYPE_NONE)
@@ -292,8 +294,8 @@ else
 
 	function  GM:PlayerSwitchFlashlight(player, enabled)
 		local SWEP = player:GetActiveWeapon();
-		if (SWEP:GetClass() == "ironsights_helper") then
-			player:SendLua('SWEP = LocalPlayer():GetActiveWeapon() if (SWEP:GetClass() == "ironsights_helper" and SWEP.EditMode) then SWEP.ViewModelFlip = !SWEP.ViewModelFlip end')
+		if (SWEP:GetClass() == "weapon_ironsightshelper") then
+			player:SendLua('SWEP = LocalPlayer():GetActiveWeapon() if (SWEP:GetClass() == "weapon_ironsightshelper" and SWEP.EditMode) then SWEP.ViewModelFlip = !SWEP.ViewModelFlip end')
 		end
 
 		return !SWEP.EditMode;
