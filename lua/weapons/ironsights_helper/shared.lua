@@ -1,7 +1,7 @@
 SWEP.Author = "Kurochi"
 SWEP.Category = "Kurochi's Ironsights Helper"
 SWEP.PrintName = "Kurochi's Ironsights Helper"
-SWEP.Instructions = "Check the workshop page."
+SWEP.Instructions = "Read the on-screen instructions, or check workshop page."
 SWEP.DrawCrosshair = true
 SWEP.ViewModelFOV = 65
 SWEP.ViewModelFlip = false
