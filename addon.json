@@ -1,0 +1,10 @@
+{
+	"title"		:	"Kurochi's Ironsights Helper",
+	"type"		:	"tool",
+	"tags"		:	[ "scenic", "realism" ],
+	"ignore"	:
+	[
+		"*.md",
+		".git"
+	]
+}
